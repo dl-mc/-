@@ -3,40 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>Redirecting...</title>
+<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <style>
   body { background:white; margin:0; }
 </style>
-<script src="pako.min.js"></script>
 </head>
 <body>
 
 <script>
-const encoded = new URLSearchParams(window.location.search).get("d");
+// Domain shortcuts with trailing slash
+const DOMAINS = {
+  "yt": "https://www.youtube.com/",
+  "mf": "https://www.mirrored.to/files/"
+};
 
-// Decode URL-safe Base64 to string
+// Get code+encoded from URL
+const fullEncoded = new URLSearchParams(window.location.search).get("d") || "";
+
+// Split domain code (first 2 letters) and remaining
+const domainCode = fullEncoded.slice(0, 2);
+const encodedPart = fullEncoded.slice(2);
+
+// Decode URL-safe Base64
 function decodeSafeBase64(str) {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
+  str = str.replace(/-/g,"+").replace(/_/g,"/");
   while (str.length % 4) str += "=";
   return atob(str);
 }
 
-// Inflate compressed string
+// Decompress
 function decompress(str) {
-  const compressed = Uint8Array.from(str.split("").map(c => c.charCodeAt(0)));
+  const compressed = Uint8Array.from(str.split("").map(c=>c.charCodeAt(0)));
   return new TextDecoder().decode(pako.inflate(compressed));
 }
 
-if (encoded) {
+// Redirect
+if (encodedPart) {
   try {
-    const compressedStr = decodeSafeBase64(encoded);
-    const decoded = decompress(compressedStr);
-
-    if (decoded.startsWith("http")) {
-      setTimeout(() => { window.location.replace(decoded); }, 250);
+    const decompressed = decompress(decodeSafeBase64(encodedPart));
+    const domainPrefix = DOMAINS[domainCode] || "";
+    const finalURL = domainPrefix + decompressed;
+    if (finalURL.startsWith("http")) {
+      setTimeout(()=>{ window.location.replace(finalURL); }, 200);
     }
-  } catch (e) {
-    console.error("Invalid code", e);
-  }
+  } catch(e) { console.error("Invalid code", e); }
 }
 </script>
 
