@@ -1,22 +1,25 @@
-// Get encoded value from URL (?d=ENCODED)
+// Read encoded value
 const encoded = new URLSearchParams(window.location.search).get("d");
 
-// Base64 decode
-function decodeBase64(str) {
+function decode(str) {
   try {
     return atob(str);
   } catch {
-    return "";
+    return null;
   }
 }
 
 if (encoded) {
-  const decoded = decodeBase64(encoded);
-  document.getElementById("inputBox").value = decoded;
-}
+  const decodedLink = decode(encoded);
 
-function download() {
-  const value = document.getElementById("inputBox").value;
-  alert("Decoded value: " + value);
-  // later you can put real download logic here
+  if (decodedLink) {
+    // Optional: show it in input if you keep UI
+    const input = document.getElementById("inputBox");
+    if (input) input.value = decodedLink;
+
+    // Auto redirect after short delay (for UX)
+    setTimeout(() => {
+      window.location.href = decodedLink;
+    }, 500); // half second
+  }
 }
