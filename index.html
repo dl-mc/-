@@ -1,50 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Marketplace Decoder</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background:#0f172a;
-      color:white;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-    }
-    .box {
-      background:#1e293b;
-      padding:25px;
-      border-radius:12px;
-      width:320px;
-      text-align:center;
-    }
-    input {
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:6px;
-      margin-bottom:12px;
-    }
-    button {
-      width:100%;
-      padding:10px;
-      border:none;
-      border-radius:6px;
-      background:#38bdf8;
-      cursor:pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Redirecting...</title>
+<style>
+  body {
+    background: white;
+    margin: 0;
+  }
+</style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Decoder</h2>
-  <input id="inputBox" placeholder="Decoded value appears here">
-  <button onclick="download()">Download</button>
-</div>
+<script>
+const encoded = new URLSearchParams(window.location.search).get("d");
 
-<script src="decoder.js"></script>
+function decode(str) {
+  try {
+    return atob(str);
+  } catch {
+    return null;
+  }
+}
+
+if (encoded) {
+  const decoded = decode(encoded);
+
+  if (decoded && decoded.startsWith("http")) {
+    // instant redirect (tiny delay so browser loads cleanly)
+    setTimeout(() => {
+      window.location.replace(decoded);
+    }, 300); // 0.3 seconds
+  }
+}
+</script>
+
 </body>
 </html>
